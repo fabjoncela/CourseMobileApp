@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Student Companion</string>
+
+    <!-- Login & Signup -->
+    <string name="login">Login</string>
+    <string name="signup">Sign Up</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="name">Full Name</string>
+    <string name="student_id">Student ID</string>
+    <string name="create_account">Create Account</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="already_have_account">Already have an account?</string>
+
+    <!-- Navigation -->
+    <string name="dashboard">Dashboard</string>
+    <string name="courses">Courses</string>
+    <string name="assignments">Assignments</string>
+    <string name="grades">Grades</string>
+    <string name="notes">Notes</string>
+
+    <!-- Actions -->
+    <string name="add">Add</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="complete">Complete</string>
+    <string name="search">Search</string>
+    <string name="logout">Logout</string>
+
+    <!-- Errors -->
+    <string name="required_field">This field is required</string>
+    <string name="invalid_email">Enter a valid email</string>
+    <string name="password_mismatch">Passwords do not match</string>
+    <string name="email_exists">Email already registered</string>
+</resources>

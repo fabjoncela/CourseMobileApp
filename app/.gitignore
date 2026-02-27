@@ -1,0 +1,15 @@
+# Built application files
+/build
+
+# Intermediate build files
+/intermediates
+/outputs
+
+# Signing files
+release/
+debug/
+
+# Local configuration
+*.keystore
+*.jks
+

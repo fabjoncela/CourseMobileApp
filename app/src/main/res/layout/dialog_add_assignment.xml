@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/assignmentTitleEt"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Assignment Title"
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="@drawable/edit_text_background"
+        android:layout_marginBottom="12dp" />
+
+    <EditText
+        android:id="@+id/assignmentDescEt"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:hint="Description"
+        android:inputType="textMultiLine"
+        android:padding="12dp"
+        android:background="@drawable/edit_text_background"
+        android:layout_marginBottom="12dp" />
+
+    <EditText
+        android:id="@+id/assignmentCourseIdEt"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Course ID"
+        android:inputType="number"
+        android:padding="12dp"
+        android:background="@drawable/edit_text_background"
+        android:layout_marginBottom="12dp" />
+
+    <EditText
+        android:id="@+id/assignmentPriorityEt"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Priority (high/medium/low)"
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="@drawable/edit_text_background" />
+
+</LinearLayout>
+

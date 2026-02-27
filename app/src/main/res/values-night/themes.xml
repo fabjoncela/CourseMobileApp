@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MyMobileFabi" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">#90CAF9</item>
+        <item name="colorPrimaryDark">#1976D2</item>
+        <item name="colorAccent">#90CAF9</item>
+
+        <!-- Material 3 color attributes -->
+        <item name="colorPrimaryVariant">#1976D2</item>
+        <item name="colorOnPrimary">#000000</item>
+        <item name="colorSecondary">#90CAF9</item>
+        <item name="colorSecondaryVariant">#1976D2</item>
+        <item name="colorOnSecondary">#000000</item>
+
+        <!-- Surface colors for dark theme -->
+        <item name="colorSurface">#121212</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorError">#CF6679</item>
+        <item name="colorOnError">#000000</item>
+
+        <!-- Background colors for dark theme -->
+        <item name="android:colorBackground">#121212</item>
+        <item name="colorOnBackground">#FFFFFF</item>
+    </style>
+</resources>
+

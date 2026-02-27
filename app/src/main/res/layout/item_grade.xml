@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:elevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/scoreText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Score: 85"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#1976D2"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/maxScoreText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Max: 100"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/percentageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Percentage: 85.00%"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#4CAF50"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/assignmentNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Assignment Name"
+            android:textSize="14sp"
+            android:textColor="#999999" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+

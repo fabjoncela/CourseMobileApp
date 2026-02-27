@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:elevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/courseNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Course Name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#1976D2"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/courseCodeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Code: CS101"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/courseTeacherText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Teacher: Dr. Smith"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/courseSemesterText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Semester: Fall 2024"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/courseCreditsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Credits: 3"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/deleteCourseBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Delete"
+            android:textSize="12sp"
+            android:background="@drawable/button_background"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+
