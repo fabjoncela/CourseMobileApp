@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.mymobilefabi.R;
 import com.example.mymobilefabi.adapters.NoteAdapter;
 import com.example.mymobilefabi.database.AppDatabase;
+import com.example.mymobilefabi.database.entities.Course;
 import com.example.mymobilefabi.database.entities.Note;
 import com.example.mymobilefabi.utils.SessionManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -120,32 +123,59 @@ public class NotesFragment extends Fragment {
 
         EditText titleEt = dialogView.findViewById(R.id.noteTitleEt);
         EditText contentEt = dialogView.findViewById(R.id.noteContentEt);
-        EditText courseIdEt = dialogView.findViewById(R.id.noteCourseIdEt);
+        Spinner courseSpinner = dialogView.findViewById(R.id.noteCourseSpinner);
 
-        new MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Add Note")
-            .setView(dialogView)
-            .setPositiveButton("Add", (dialog, which) -> {
-                String title = titleEt.getText().toString().trim();
-                String content = contentEt.getText().toString().trim();
-                String courseIdStr = courseIdEt.getText().toString().trim();
+        // Load courses for spinner in background
+        new Thread(() -> {
+            int userId = sessionManager.getUserId();
+            List<Course> courses = database.courseDao().getCoursesByUserId(userId);
 
-                if (title.isEmpty() || content.isEmpty()) {
-                    Toast.makeText(requireContext(), "Title and content required", Toast.LENGTH_SHORT).show();
-                    return;
+            requireActivity().runOnUiThread(() -> {
+                // Create display list with "None" option first, then course names
+                List<String> courseNames = new ArrayList<>();
+                courseNames.add("None (General Note)");
+
+                for (Course course : courses) {
+                    courseNames.add(course.getName() + " (" + course.getCode() + ")");
                 }
 
-                int courseId = courseIdStr.isEmpty() ? 0 : Integer.parseInt(courseIdStr);
-                int userId = sessionManager.getUserId();
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                        android.R.layout.simple_spinner_item, courseNames);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                courseSpinner.setAdapter(adapter);
 
-                new Thread(() -> {
-                    Note newNote = new Note(userId, courseId, title, content);
-                    database.noteDao().insertNote(newNote);
-                    requireActivity().runOnUiThread(this::loadNotes);
-                }).start();
-            })
-            .setNegativeButton("Cancel", null)
-            .show();
+                // Show the dialog after courses are loaded
+                new MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Add Note")
+                    .setView(dialogView)
+                    .setPositiveButton("Add", (dialog, whichButton) -> {
+                        String title = titleEt.getText().toString().trim();
+                        String content = contentEt.getText().toString().trim();
+                        int selectedPosition = courseSpinner.getSelectedItemPosition();
+
+                        if (title.isEmpty() || content.isEmpty()) {
+                            Toast.makeText(requireContext(), "Title and content required", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // If position 0 is selected (None), use courseId = 0
+                        // Otherwise, get the course ID from the selected position (subtract 1 for "None" offset)
+                        int courseId = 0;
+                        if (selectedPosition > 0 && selectedPosition <= courses.size()) {
+                            courseId = courses.get(selectedPosition - 1).getId();
+                        }
+
+                        int finalCourseId = courseId;
+                        new Thread(() -> {
+                            Note newNote = new Note(userId, finalCourseId, title, content);
+                            database.noteDao().insertNote(newNote);
+                            requireActivity().runOnUiThread(this::loadNotes);
+                        }).start();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            });
+        }).start();
     }
 
     /**

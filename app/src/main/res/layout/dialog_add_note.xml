@@ -25,12 +25,18 @@
         android:background="@drawable/edit_text_background"
         android:layout_marginBottom="12dp" />
 
-    <EditText
-        android:id="@+id/noteCourseIdEt"
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Link to Course (optional)"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="4dp" />
+
+    <Spinner
+        android:id="@+id/noteCourseSpinner"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:hint="Course ID (optional)"
-        android:inputType="number"
         android:padding="12dp"
         android:background="@drawable/edit_text_background" />
 

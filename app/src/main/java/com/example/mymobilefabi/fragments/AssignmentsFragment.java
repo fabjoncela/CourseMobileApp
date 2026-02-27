@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -15,6 +17,7 @@ import com.example.mymobilefabi.R;
 import com.example.mymobilefabi.adapters.AssignmentAdapter;
 import com.example.mymobilefabi.database.AppDatabase;
 import com.example.mymobilefabi.database.entities.Assignment;
+import com.example.mymobilefabi.database.entities.Course;
 import com.example.mymobilefabi.utils.SessionManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -120,34 +123,65 @@ public class AssignmentsFragment extends Fragment {
 
         EditText titleEt = dialogView.findViewById(R.id.assignmentTitleEt);
         EditText descEt = dialogView.findViewById(R.id.assignmentDescEt);
-        EditText courseIdEt = dialogView.findViewById(R.id.assignmentCourseIdEt);
+        Spinner courseSpinner = dialogView.findViewById(R.id.assignmentCourseSpinner);
         EditText priorityEt = dialogView.findViewById(R.id.assignmentPriorityEt);
 
-        new MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Add Assignment")
-            .setView(dialogView)
-            .setPositiveButton("Add", (dialog, which) -> {
-                String title = titleEt.getText().toString().trim();
-                String desc = descEt.getText().toString().trim();
-                String courseIdStr = courseIdEt.getText().toString().trim();
-                String priority = priorityEt.getText().toString().trim();
+        // Load courses for spinner in background
+        new Thread(() -> {
+            int userId = sessionManager.getUserId();
+            List<Course> courses = database.courseDao().getCoursesByUserId(userId);
 
-                if (title.isEmpty() || courseIdStr.isEmpty() || priority.isEmpty()) {
-                    Toast.makeText(requireContext(), "Required fields missing", Toast.LENGTH_SHORT).show();
+            requireActivity().runOnUiThread(() -> {
+                if (courses.isEmpty()) {
+                    Toast.makeText(requireContext(), "Please create a course first", Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                int courseId = Integer.parseInt(courseIdStr);
-                long dueDate = System.currentTimeMillis() + (7 * 24 * 60 * 60 * 1000); // 7 days from now
+                // Create display list with course names
+                List<String> courseNames = new ArrayList<>();
+                for (Course course : courses) {
+                    courseNames.add(course.getName() + " (" + course.getCode() + ")");
+                }
 
-                new Thread(() -> {
-                    Assignment newAssignment = new Assignment(courseId, title, desc, dueDate, priority, "pending");
-                    database.assignmentDao().insertAssignment(newAssignment);
-                    requireActivity().runOnUiThread(this::loadAssignments);
-                }).start();
-            })
-            .setNegativeButton("Cancel", null)
-            .show();
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                        android.R.layout.simple_spinner_item, courseNames);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                courseSpinner.setAdapter(adapter);
+
+                // Show the dialog after courses are loaded
+                new MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Add Assignment")
+                    .setView(dialogView)
+                    .setPositiveButton("Add", (dialog, whichButton) -> {
+                        String title = titleEt.getText().toString().trim();
+                        String desc = descEt.getText().toString().trim();
+                        String priority = priorityEt.getText().toString().trim();
+                        int selectedPosition = courseSpinner.getSelectedItemPosition();
+
+                        if (title.isEmpty() || priority.isEmpty()) {
+                            Toast.makeText(requireContext(), "Title and priority required", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (selectedPosition < 0 || selectedPosition >= courses.size()) {
+                            Toast.makeText(requireContext(), "Please select a course", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // Get the actual course ID from the selected position
+                        int courseId = courses.get(selectedPosition).getId();
+                        long dueDate = System.currentTimeMillis() + (7 * 24 * 60 * 60 * 1000); // 7 days from now
+
+                        new Thread(() -> {
+                            Assignment newAssignment = new Assignment(courseId, title, desc, dueDate, priority, "pending");
+                            database.assignmentDao().insertAssignment(newAssignment);
+                            requireActivity().runOnUiThread(this::loadAssignments);
+                        }).start();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            });
+        }).start();
     }
 
     /**
