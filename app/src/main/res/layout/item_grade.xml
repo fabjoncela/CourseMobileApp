@@ -12,13 +12,32 @@
         android:padding="16dp">
 
         <TextView
+            android:id="@+id/courseNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Course: Data Structures"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FF6F00"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/assignmentNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Assignment: Quiz 1"
+            android:textSize="15sp"
+            android:textColor="#1976D2"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
             android:id="@+id/scoreText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Score: 85"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#1976D2"
+            android:textColor="#333333"
             android:layout_marginBottom="8dp" />
 
         <TextView
@@ -40,13 +59,6 @@
             android:textColor="#4CAF50"
             android:layout_marginBottom="4dp" />
 
-        <TextView
-            android:id="@+id/assignmentNameText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Assignment Name"
-            android:textSize="14sp"
-            android:textColor="#999999" />
 
     </LinearLayout>
 

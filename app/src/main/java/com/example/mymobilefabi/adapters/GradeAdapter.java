@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mymobilefabi.R;
 import com.example.mymobilefabi.database.AppDatabase;
+import com.example.mymobilefabi.database.entities.Assignment;
+import com.example.mymobilefabi.database.entities.Course;
 import com.example.mymobilefabi.database.entities.Grade;
 
 import java.util.List;
@@ -35,7 +37,7 @@ public class GradeAdapter extends RecyclerView.Adapter<GradeAdapter.GradeViewHol
     @Override
     public void onBindViewHolder(GradeViewHolder holder, int position) {
         Grade grade = grades.get(position);
-        holder.bind(grade);
+        holder.bind(grade, database);
     }
 
     @Override
@@ -47,25 +49,46 @@ public class GradeAdapter extends RecyclerView.Adapter<GradeAdapter.GradeViewHol
      * ViewHolder for grade items
      */
     public class GradeViewHolder extends RecyclerView.ViewHolder {
-        TextView scoreText, maxScoreText, percentageText, assignmentText;
+        TextView courseText, assignmentText, scoreText, maxScoreText, percentageText;
 
         public GradeViewHolder(android.view.View itemView) {
             super(itemView);
+            courseText = itemView.findViewById(R.id.courseNameText);
+            assignmentText = itemView.findViewById(R.id.assignmentNameText);
             scoreText = itemView.findViewById(R.id.scoreText);
             maxScoreText = itemView.findViewById(R.id.maxScoreText);
             percentageText = itemView.findViewById(R.id.percentageText);
-            assignmentText = itemView.findViewById(R.id.assignmentNameText);
         }
 
-        public void bind(Grade grade) {
+        public void bind(Grade grade, AppDatabase db) {
+            // Set score and max score
             scoreText.setText("Score: " + grade.getScore());
             maxScoreText.setText("Max: " + grade.getMaxScore());
+
+            // Calculate and set percentage
             double percentage = grade.getPercentage();
             percentageText.setText(String.format("Percentage: %.2f%%", percentage));
 
             // Set color based on percentage
             int color = getGradeColor(percentage);
             percentageText.setTextColor(color);
+
+            // Get and set course and assignment names
+            new Thread(() -> {
+                Assignment assignment = db.assignmentDao().getAssignmentById(grade.getAssignment_id());
+                if (assignment != null) {
+                    // Get course name
+                    Course course = db.courseDao().getCourseById(assignment.getCourse_id());
+                    String courseName = (course != null) ? course.getName() : "Unknown Course";
+                    String assignmentTitle = assignment.getTitle();
+
+                    courseText.post(() -> courseText.setText("Course: " + courseName));
+                    assignmentText.post(() -> assignmentText.setText("Assignment: " + assignmentTitle));
+                } else {
+                    courseText.post(() -> courseText.setText("Course: Unknown"));
+                    assignmentText.post(() -> assignmentText.setText("Assignment: Unknown"));
+                }
+            }).start();
         }
 
         private int getGradeColor(double percentage) {
