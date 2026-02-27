@@ -1,60 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:background="@android:color/white">
 
-    <!-- Average Grade Card -->
-    <androidx.cardview.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:elevation="4dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <LinearLayout
+        <!-- Average Grade Card -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginBottom="16dp"
+            android:elevation="4dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Grade Statistics"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#1976D2"
-                android:layout_marginBottom="12dp" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <TextView
-                android:id="@+id/averageGradeText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Average: 0.00%"
-                android:textSize="16sp"
-                android:textColor="#333333"
-                android:layout_marginBottom="8dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Grade Statistics"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#1976D2"
+                    android:layout_marginBottom="12dp" />
 
-            <TextView
-                android:id="@+id/gpaText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="GPA: 0.00"
-                android:textSize="16sp"
-                android:textColor="#333333" />
+                <TextView
+                    android:id="@+id/averageGradeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Average: 0.00%"
+                    android:textSize="16sp"
+                    android:textColor="#333333"
+                    android:layout_marginBottom="8dp" />
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/gpaText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GPA: 0.00"
+                    android:textSize="16sp"
+                    android:textColor="#333333" />
 
-    </androidx.cardview.widget.CardView>
+            </LinearLayout>
 
-    <!-- Grades RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/gradesRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        </androidx.cardview.widget.CardView>
 
-</LinearLayout>
+        <!-- Grades RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/gradesRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <!-- Add Grade Button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addGradeBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add"
+        app:tint="@android:color/white"
+        android:backgroundTint="#1976D2" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
