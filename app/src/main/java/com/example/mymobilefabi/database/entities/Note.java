@@ -33,6 +33,7 @@ public class Note {
     private int course_id;
     private String title;
     private String content;
+    private String status; // active, deleted
     private long createdAt;
     private long updatedAt;
 
@@ -42,6 +43,7 @@ public class Note {
         this.course_id = course_id;
         this.title = title;
         this.content = content;
+        this.status = "active"; // Default status
         this.createdAt = System.currentTimeMillis();
         this.updatedAt = System.currentTimeMillis();
     }
@@ -85,6 +87,14 @@ public class Note {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public long getCreatedAt() {

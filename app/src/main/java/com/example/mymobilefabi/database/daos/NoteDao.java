@@ -47,6 +47,24 @@ public interface NoteDao {
     List<Note> getNotesByUserId(int userId);
 
     /**
+     * Get active notes for a user
+     */
+    @Query("SELECT * FROM notes WHERE user_id = :userId AND status = 'active' ORDER BY updatedAt DESC")
+    List<Note> getActiveNotes(int userId);
+
+    /**
+     * Get deleted notes for a user
+     */
+    @Query("SELECT * FROM notes WHERE user_id = :userId AND status = 'deleted' ORDER BY updatedAt DESC")
+    List<Note> getDeletedNotes(int userId);
+
+    /**
+     * Get notes by status
+     */
+    @Query("SELECT * FROM notes WHERE user_id = :userId AND status = :status ORDER BY updatedAt DESC")
+    List<Note> getNotesByStatus(int userId, String status);
+
+    /**
      * Get all notes for a specific course
      */
     @Query("SELECT * FROM notes WHERE user_id = :userId AND course_id = :courseId ORDER BY updatedAt DESC")
@@ -55,7 +73,7 @@ public interface NoteDao {
     /**
      * Search notes by title or content
      */
-    @Query("SELECT * FROM notes WHERE user_id = :userId AND (title LIKE '%' || :searchQuery || '%' OR content LIKE '%' || :searchQuery || '%') ORDER BY updatedAt DESC")
-    List<Note> searchNotes(int userId, String searchQuery);
+    @Query("SELECT * FROM notes WHERE user_id = :userId AND status = :status AND (title LIKE '%' || :searchQuery || '%' OR content LIKE '%' || :searchQuery || '%') ORDER BY updatedAt DESC")
+    List<Note> searchNotes(int userId, String status, String searchQuery);
 }
 

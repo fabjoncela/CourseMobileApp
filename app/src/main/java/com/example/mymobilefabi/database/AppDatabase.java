@@ -25,7 +25,7 @@ import com.example.mymobilefabi.database.entities.User;
  */
 @Database(
     entities = {User.class, Course.class, Assignment.class, Grade.class, Note.class, Notification.class},
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -53,6 +53,15 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class,
                             "student_companion_db"
                         )
+                        .fallbackToDestructiveMigration() // For development - recreates DB on schema change
+                        .addCallback(new Callback() {
+                            @Override
+                            public void onOpen(androidx.sqlite.db.SupportSQLiteDatabase db) {
+                                super.onOpen(db);
+                                // Disable foreign key constraints for development
+                                db.execSQL("PRAGMA foreign_keys=OFF;");
+                            }
+                        })
                         .build();
                 }
             }

@@ -41,12 +41,18 @@
         android:background="@drawable/edit_text_background"
         android:layout_marginBottom="12dp" />
 
-    <EditText
-        android:id="@+id/assignmentPriorityEt"
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Priority"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="4dp" />
+
+    <Spinner
+        android:id="@+id/assignmentPrioritySpinner"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:hint="Priority (high/medium/low)"
-        android:inputType="text"
         android:padding="12dp"
         android:background="@drawable/edit_text_background" />
 

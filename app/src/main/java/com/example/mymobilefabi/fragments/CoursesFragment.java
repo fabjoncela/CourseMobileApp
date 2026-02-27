@@ -143,10 +143,25 @@ public class CoursesFragment extends Fragment {
                 int credits = Integer.parseInt(creditsStr);
                 int userId = sessionManager.getUserId();
 
+                // Validate user ID
+                if (userId <= 0) {
+                    Toast.makeText(requireContext(), "User not logged in. Please log in again.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 new Thread(() -> {
-                    Course newCourse = new Course(userId, name, code, teacher, semester, credits);
-                    database.courseDao().insertCourse(newCourse);
-                    requireActivity().runOnUiThread(this::loadCourses);
+                    try {
+                        Course newCourse = new Course(userId, name, code, teacher, semester, credits);
+                        database.courseDao().insertCourse(newCourse);
+                        requireActivity().runOnUiThread(() -> {
+                            Toast.makeText(requireContext(), "Course added successfully", Toast.LENGTH_SHORT).show();
+                            loadCourses();
+                        });
+                    } catch (Exception e) {
+                        requireActivity().runOnUiThread(() -> {
+                            Toast.makeText(requireContext(), "Error adding course: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        });
+                    }
                 }).start();
             })
             .setNegativeButton("Cancel", null)

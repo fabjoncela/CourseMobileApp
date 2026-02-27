@@ -21,12 +21,13 @@ import com.example.mymobilefabi.database.entities.Note;
 import com.example.mymobilefabi.utils.SessionManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * NotesFragment - Manage study notes with search functionality
+ * NotesFragment - Manage study notes with tabs for Active and Deleted
  */
 public class NotesFragment extends Fragment {
 
@@ -36,7 +37,10 @@ public class NotesFragment extends Fragment {
     private NoteAdapter noteAdapter;
     private FloatingActionButton addNoteBtn;
     private EditText searchEditText;
+    private TabLayout tabLayout;
     private List<Note> notesList = new ArrayList<>();
+    private String currentStatus = "active"; // Default tab
+    private Thread currentLoadThread; // Track current loading thread to cancel duplicates
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,6 +55,7 @@ public class NotesFragment extends Fragment {
         sessionManager = new SessionManager(requireContext());
 
         // Initialize views
+        tabLayout = view.findViewById(R.id.noteTabLayout);
         notesRecyclerView = view.findViewById(R.id.notesRecyclerView);
         addNoteBtn = view.findViewById(R.id.addNoteBtn);
         searchEditText = view.findViewById(R.id.searchEditText);
@@ -60,8 +65,32 @@ public class NotesFragment extends Fragment {
         noteAdapter = new NoteAdapter(notesList, this);
         notesRecyclerView.setAdapter(noteAdapter);
 
-        // Load notes
-        loadNotes();
+        // Setup Tab listener
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int position = tab.getPosition();
+                switch (position) {
+                    case 0: // Active
+                        currentStatus = "active";
+                        break;
+                    case 1: // Deleted
+                        currentStatus = "deleted";
+                        break;
+                }
+                searchEditText.setText(""); // Clear search
+                loadNotesByStatus();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
+        // Load initial notes
+        loadNotesByStatus();
 
         // Add note button
         addNoteBtn.setOnClickListener(v -> showAddNoteDialog());
@@ -82,37 +111,87 @@ public class NotesFragment extends Fragment {
     }
 
     /**
-     * Load all notes for user
+     * Load notes based on current status/tab
+     * Properly handles thread synchronization to prevent duplicates when switching tabs quickly
      */
-    private void loadNotes() {
-        new Thread(() -> {
-            int userId = sessionManager.getUserId();
-            notesList.clear();
-            notesList.addAll(database.noteDao().getNotesByUserId(userId));
+    private void loadNotesByStatus() {
+        // Cancel any previous loading thread
+        if (currentLoadThread != null && currentLoadThread.isAlive()) {
+            currentLoadThread.interrupt();
+        }
 
-            requireActivity().runOnUiThread(() -> noteAdapter.notifyDataSetChanged());
-        }).start();
+        currentLoadThread = new Thread(() -> {
+            try {
+                int userId = sessionManager.getUserId();
+                final List<Note> newList = database.noteDao().getNotesByStatus(userId, currentStatus);
+
+                if (Thread.currentThread().isInterrupted()) {
+                    return; // Cancel if thread was interrupted
+                }
+
+                requireActivity().runOnUiThread(() -> {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
+
+                    synchronized (notesList) {
+                        notesList.clear();
+                        notesList.addAll(newList);
+                    }
+                    noteAdapter.notifyDataSetChanged();
+                });
+            } catch (Exception e) {
+                if (!Thread.currentThread().isInterrupted()) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        currentLoadThread.start();
     }
 
     /**
-     * Search notes
+     * Search notes within current status
      */
     private void searchNotes(String query) {
         if (query.isEmpty()) {
-            loadNotes();
+            loadNotesByStatus();
             return;
         }
 
-        new Thread(() -> {
-            int userId = sessionManager.getUserId();
-            List<Note> results = database.noteDao().searchNotes(userId, query);
+        // Cancel any previous loading thread
+        if (currentLoadThread != null && currentLoadThread.isAlive()) {
+            currentLoadThread.interrupt();
+        }
 
-            requireActivity().runOnUiThread(() -> {
-                notesList.clear();
-                notesList.addAll(results);
-                noteAdapter.notifyDataSetChanged();
-            });
-        }).start();
+        currentLoadThread = new Thread(() -> {
+            try {
+                int userId = sessionManager.getUserId();
+                final List<Note> results = database.noteDao().searchNotes(userId, currentStatus, query);
+
+                if (Thread.currentThread().isInterrupted()) {
+                    return; // Cancel if thread was interrupted
+                }
+
+                requireActivity().runOnUiThread(() -> {
+                    if (Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
+
+                    synchronized (notesList) {
+                        notesList.clear();
+                        notesList.addAll(results);
+                    }
+                    noteAdapter.notifyDataSetChanged();
+                });
+            } catch (Exception e) {
+                if (!Thread.currentThread().isInterrupted()) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        currentLoadThread.start();
     }
 
     /**
@@ -169,7 +248,7 @@ public class NotesFragment extends Fragment {
                         new Thread(() -> {
                             Note newNote = new Note(userId, finalCourseId, title, content);
                             database.noteDao().insertNote(newNote);
-                            requireActivity().runOnUiThread(this::loadNotes);
+                            requireActivity().runOnUiThread(this::loadNotesByStatus);
                         }).start();
                     })
                     .setNegativeButton("Cancel", null)
@@ -179,12 +258,34 @@ public class NotesFragment extends Fragment {
     }
 
     /**
-     * Delete note
+     * Soft delete note (mark as deleted)
      */
     public void deleteNote(Note note) {
         new Thread(() -> {
+            note.setStatus("deleted");
+            database.noteDao().updateNote(note);
+            requireActivity().runOnUiThread(this::loadNotesByStatus);
+        }).start();
+    }
+
+    /**
+     * Restore deleted note
+     */
+    public void restoreNote(Note note) {
+        new Thread(() -> {
+            note.setStatus("active");
+            database.noteDao().updateNote(note);
+            requireActivity().runOnUiThread(this::loadNotesByStatus);
+        }).start();
+    }
+
+    /**
+     * Permanently delete note
+     */
+    public void permanentlyDeleteNote(Note note) {
+        new Thread(() -> {
             database.noteDao().deleteNote(note);
-            requireActivity().runOnUiThread(this::loadNotes);
+            requireActivity().runOnUiThread(this::loadNotesByStatus);
         }).start();
     }
 }

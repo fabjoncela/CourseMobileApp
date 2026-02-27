@@ -61,6 +61,20 @@ public interface AssignmentDao {
     List<Assignment> getCompletedAssignments(int userId);
 
     /**
+     * Get all deleted assignments for a user
+     */
+    @Query("SELECT a.* FROM assignments a JOIN courses c ON a.course_id = c.id " +
+           "WHERE c.user_id = :userId AND a.status = 'deleted' ORDER BY a.dueDate DESC")
+    List<Assignment> getDeletedAssignments(int userId);
+
+    /**
+     * Get all assignments by status
+     */
+    @Query("SELECT a.* FROM assignments a JOIN courses c ON a.course_id = c.id " +
+           "WHERE c.user_id = :userId AND a.status = :status ORDER BY a.dueDate ASC")
+    List<Assignment> getAssignmentsByStatus(int userId, String status);
+
+    /**
      * Get assignments by priority
      */
     @Query("SELECT a.* FROM assignments a JOIN courses c ON a.course_id = c.id " +
@@ -71,7 +85,7 @@ public interface AssignmentDao {
      * Search assignments by title
      */
     @Query("SELECT a.* FROM assignments a JOIN courses c ON a.course_id = c.id " +
-           "WHERE c.user_id = :userId AND a.title LIKE '%' || :searchQuery || '%' ORDER BY a.dueDate ASC")
-    List<Assignment> searchAssignments(int userId, String searchQuery);
+           "WHERE c.user_id = :userId AND a.status = :status AND a.title LIKE '%' || :searchQuery || '%' ORDER BY a.dueDate ASC")
+    List<Assignment> searchAssignments(int userId, String status, String searchQuery);
 }
 
