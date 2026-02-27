@@ -2,9 +2,12 @@ package com.example.mymobilefabi;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -15,6 +18,7 @@ import com.example.mymobilefabi.fragments.CoursesFragment;
 import com.example.mymobilefabi.fragments.AssignmentsFragment;
 import com.example.mymobilefabi.fragments.GradesFragment;
 import com.example.mymobilefabi.fragments.NotesFragment;
+import com.example.mymobilefabi.fragments.ProfileFragment;
 import com.example.mymobilefabi.utils.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -41,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
             navigateToLogin();
             return;
         }
+
+        // Setup toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         // Initialize views
         fragmentContainer = findViewById(R.id.fragmentContainer);
@@ -74,6 +82,28 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
+    }
+
+    /**
+     * Inflate toolbar menu
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    /**
+     * Handle toolbar menu item clicks
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_profile) {
+            // Navigate to profile fragment
+            loadFragment(new ProfileFragment());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
